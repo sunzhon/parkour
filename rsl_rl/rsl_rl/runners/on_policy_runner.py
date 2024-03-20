@@ -49,7 +49,7 @@ class OnPolicyRunner:
                  log_dir=None,
                  device='cpu'):
 
-        self.cfg=train_cfg["runner"]
+        self.cfg = train_cfg["runner"]
         self.alg_cfg = train_cfg["algorithm"]
         self.policy_cfg = train_cfg["policy"]
         self.device = device

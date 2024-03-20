@@ -16,6 +16,7 @@ from legged_gym.debugger import break_into_debugger
 from rsl_rl.modules import build_actor_critic
 from rsl_rl.runners.dagger_saver import DemonstrationSaver, DaggerSaver
 
+logs_root = osp.join(osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__)))), "logs")
 def main(args):
     RunnerCls = DaggerSaver
     # RunnerCls = DemonstrationSaver
@@ -23,7 +24,7 @@ def main(args):
     teacher_act_prob = 0.1
     env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
     if RunnerCls == DaggerSaver:
-        with open(os.path.join("logs", train_cfg.runner.experiment_name, args.load_run, "config.json"), "r") as f:
+        with open(os.path.join(logs_root, train_cfg.runner.experiment_name, args.load_run, "config.json"), "r") as f:
             d = json.load(f, object_pairs_hook= OrderedDict)
             update_class_from_dict(env_cfg, d, strict= True)
             update_class_from_dict(train_cfg, d, strict= True)
@@ -58,7 +59,7 @@ def main(args):
         # action_sample_std = 0.1
         # env_cfg.terrain.num_rows = 22; env_cfg.terrain.num_cols = 16
         pass
-    if (env_cfg.terrain.BarrierTrack_kwargs["options"][0] == "leap") and all(i  == env_cfg.terrain.BarrierTrack_kwargs["options"][0] for i in env_cfg.terrain.BarrierTrack_kwargs["options"]):
+    if (env_cfg.terrain.BarrierTrack_kwargs["options"][0] == "leap") and all(i == env_cfg.terrain.BarrierTrack_kwargs["options"][0] for i in env_cfg.terrain.BarrierTrack_kwargs["options"]):
         ######### For leap, because the platform is usually higher than the ground.
         env_cfg.terrain.num_rows = 80
         env_cfg.terrain.num_cols = 1

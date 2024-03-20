@@ -576,7 +576,7 @@ class LeggedRobot(BaseTask):
 
         # create some wrapper tensors for different slices
         self.all_root_states = gymtorch.wrap_tensor(actor_root_state)
-        self.root_states = self.all_root_states.view(self.num_envs, -1, 13)[:, 0, :] # (num_envs, 13)
+        self.root_states = self.all_root_states.view(self.num_envs, -1, 13)[:, 0, :] # (num_envs, 1, 13), add a dim
         self.all_dof_states = gymtorch.wrap_tensor(dof_state_tensor)
         self.dof_state = self.all_dof_states.view(self.num_envs, -1, 2)[:, :self.num_dof, :] # (num_envs, 2)
         self.dof_pos = self.dof_state.view(self.num_envs, -1, 2)[..., :self.num_dof, 0]
@@ -735,7 +735,7 @@ class LeggedRobot(BaseTask):
              2. For each environment
                 2.1 creates the environment, 
                 2.2 calls DOF and Rigid shape properties callbacks,
-                2.3 create actor with these properties and add them to the env
+                2.3 create actor with these properties and add them to the env,
              3. Store indices of different bodies of the robot
         """
         asset_path = self.cfg.asset.file.format(LEGGED_GYM_ROOT_DIR=LEGGED_GYM_ROOT_DIR)

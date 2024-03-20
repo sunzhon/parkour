@@ -13,8 +13,8 @@ class TerrainPerlin:
         self.env_width = cfg.terrain_width
         self.xSize = cfg.terrain_length * cfg.num_rows # int(cfg.horizontal_scale * cfg.tot_cols)
         self.ySize = cfg.terrain_width * cfg.num_cols # int(cfg.horizontal_scale * cfg.tot_rows)
-        self.tot_cols = int(self.xSize / cfg.horizontal_scale)
-        self.tot_rows = int(self.ySize / cfg.horizontal_scale)
+        self.tot_rows = int(self.xSize / cfg.horizontal_scale)
+        self.tot_cols = int(self.ySize / cfg.horizontal_scale)
         assert(self.xSize == cfg.horizontal_scale * self.tot_rows and self.ySize == cfg.horizontal_scale * self.tot_cols)
         self.heightsamples_float = self.generate_fractal_noise_2d(self.xSize, self.ySize, self.tot_rows, self.tot_cols, **cfg.TerrainPerlin_kwargs)
         # self.heightsamples_float[self.tot_cols//2 - 100:, :] += 100000
@@ -65,7 +65,7 @@ class TerrainPerlin:
         shape = (xSamples, ySamples)
         noise = np.zeros(shape)
         for _ in range(fractalOctaves):
-            noise += amplitude * TerrainPerlin.generate_perlin_noise_2d((xSamples, ySamples), (xScale, yScale)) * zScale
+            noise += amplitude * TerrainPerlin.generate_perlin_noise_2d((xSamples, ySamples), (xScale, yScale)) *  (zScale[1] if isinstance(zScale, (list,tuple)) else zScale)
             amplitude *= fractalGain
             xScale, yScale = int(fractalLacunarity * xScale), int(fractalLacunarity * yScale)
 

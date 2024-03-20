@@ -11,7 +11,7 @@ class A1FieldDistillCfg( A1FieldCfg ):
         num_envs = 256
         obs_components = [
             "proprioception", # 48
-            "forward_depth",
+            #"forward_depth",
         ]
         privileged_obs_components = [
             "proprioception", # 48
@@ -54,25 +54,24 @@ class A1FieldDistillCfg( A1FieldCfg ):
             depth_range = [0.0, 1.5] # [m]
 
         class proprioception:
-            delay_action_obs = True
+            delay_action_obs = False # TAO. set it to false when distill task
             latency_range = [0.04-0.0025, 0.04+0.0075] # [min, max] in seconds
             latency_resample_time = 2.0 # [s]
 
     class terrain( A1FieldCfg.terrain ):
         num_rows = 2
         # num_rows = 80
-        num_cols = 1
+        num_cols = 2
         max_init_terrain_level = 1
         curriculum = False
         
         selected = "BarrierTrack"
         BarrierTrack_kwargs = dict(
             options= [
-                "tilt",
-                "crawl",
-                "climb",
-                "climb",
-                "leap",
+                "jump",
+                #"tilt",
+                #"crawl",
+                #"leap",
             ], # each race track will permute all the options
             n_obstacles_per_track= 5,
             randomize_obstacle_order= True,
@@ -119,6 +118,7 @@ class A1FieldDistillCfg( A1FieldCfg ):
 
         TerrainPerlin_kwargs = dict(
             zScale= [0.0, 0.05], # for parkour real-world env
+            #zScale= 0.15, # for parkour real-world env
             frequency= 10,
         )
         
@@ -232,7 +232,8 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
         learning_rate = 3e-4
         optimizer_class_name = "AdamW"
 
-        teacher_policy_class_name = "ActorCriticClimbMutex"
+        #teacher_policy_class_name = "ActorCriticClimbMutex" #Tao comment this
+        teacher_policy_class_name = "ActorCriticFieldMutex"
         teacher_ac_path = None
         class teacher_policy (A1FieldCfgPPO.policy ):
             # For loading teacher policy. No need to change for training student
@@ -250,13 +251,16 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
 
             sub_policy_class_name = "ActorCriticRecurrent"
             sub_policy_paths = [ # must in the order of obstacle ID, Replace the folder name with your own training logdir
-                os.path.join(logs_root, "field_a1/{your walking policy}"),
-                os.path.join(logs_root, "field_a1/{your tilting policy}"),
-                os.path.join(logs_root, "field_a1/{your crawling policy}"),
-                os.path.join(logs_root, "field_a1/{your climbing policy}"),
-                os.path.join(logs_root, "field_a1/{your leaping policy}"),
+                #os.path.join(logs_root, "field_a1/good_WalkForward_aScale0.5"),
+                os.path.join(logs_root,"field_a1/Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
+                #os.path.join(logs_root,"field_a1/Mar18_20-25-36_WalkForward_aScale0.5"),
+                #os.path.join(logs_root, "field_a1/{your tilting policy}"),
+                #os.path.join(logs_root, "field_a1/{your crawling policy}"),
+                #os.path.join(logs_root, "field_a1/{your climbing policy}"),
+                #os.path.join(logs_root, "field_a1/{your leaping policy}"),
             ]
-            climb_down_policy_path = os.path.join(logs_root, "field_a1/{your climbing down policy}")
+            #climb_down_policy_path = os.path.join(logs_root, "field_a1/{your climbing down policy}")
+            climb_down_policy_path = os.path.join(logs_root, "field_a1/good_WalkForward_aScale0.5")
             cmd_vel_mapping = {
                 0: 1.0,
                 1: 0.5,
@@ -278,7 +282,8 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
 
     runner_class_name = "TwoStageRunner"
     class runner( A1FieldCfgPPO.runner ):
-        policy_class_name = "VisualDeterministicRecurrent"
+        #policy_class_name = "VisualDeterministicRecurrent"
+        policy_class_name = "ActorCriticRecurrent"
         algorithm_class_name = "TPPO"
         experiment_name = "distill_a1"
         num_steps_per_env = 48

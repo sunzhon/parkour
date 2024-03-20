@@ -10,16 +10,19 @@ class A1RemoteCfg( A1FieldCfg ):
             "proprioception", # 48
             # "height_measurements", # 187
             # "forward_depth",
-            # "base_pose",
-            # "robot_config",
-            # "engaging_block",
-            # "sidewall_distance",
+             "base_pose",
+             "robot_config",
+             "engaging_block",
+             "sidewall_distance",
         ]
         privileged_obs_components = [
             "proprioception",
             # "height_measurements",
             # "forward_depth",
-            "robot_config",
+             "base_pose",
+             "robot_config",
+             "engaging_block",
+             "sidewall_distance",
         ]
         use_lin_vel = False
         privileged_use_lin_vel = True
@@ -27,7 +30,7 @@ class A1RemoteCfg( A1FieldCfg ):
     class terrain( A1FieldCfg.terrain ):
         num_rows = 4
         num_cols = 4
-        selected = "TerrainPerlin"
+        selected = "BarrierTrack" #"TerrainPerlin" #
         TerrainPerlin_kwargs = dict(
             zScale= 0.15,
             frequency= 10,
@@ -45,22 +48,6 @@ class A1RemoteCfg( A1FieldCfg ):
         max_push_vel_ang = 0.5
         push_robots = True
 
-    class rewards( A1FieldCfg.rewards ):
-        class scales:
-            ###### hacker from Field
-            tracking_ang_vel = 0.5
-            lin_vel_l2norm = -1.
-            legs_energy_substeps = -1e-5
-            alive = 2.
-            # penalty for hardware safety
-            exceed_dof_pos_limits = -4e-2
-            exceed_torque_limits_l1norm = -4e-1
-            # penalty for walking gait, probably no need
-            collision = -0.1
-            orientation = -0.1
-            feet_contact_forces = -1e-3
-        soft_dof_pos_limit = 0.5
-        max_contact_force = 60.0
 
 logs_root = osp.join(osp.dirname(osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__))))), "logs")
 class A1RemoteCfgPPO( A1FieldCfgPPO ):

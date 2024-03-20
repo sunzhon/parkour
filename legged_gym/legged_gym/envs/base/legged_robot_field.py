@@ -466,6 +466,9 @@ class LeggedRobotField(LeggedRobot):
             dtype= torch.float32,    
         )
 
+        ###################################
+        # get obs values according to obs segments
+        ######################################
     def _get_proprioception_obs(self, privileged= False):
         return self.obs_super_impl[:, :48]
     
@@ -744,6 +747,8 @@ class LeggedRobotField(LeggedRobot):
         """
         segments = OrderedDict()
         if "proprioception" in components:
+            # base lin_vel (3), base ang_vel(3), base projected gravity (3), commands (3) 
+            # 12 dof_pos, 12 dof_vel, 12 actions
             segments["proprioception"] = (48,)
         if "height_measurements" in components:
             segments["height_measurements"] = (187,)

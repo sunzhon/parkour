@@ -16,6 +16,8 @@ class A1JumpCfg( A1FieldCfg ):
     
     class terrain( A1FieldCfg.terrain ):
         max_init_terrain_level = 2
+        num_rows = 4
+        num_cols = 4
         border_size = 5
         slope_treshold = 20.
         curriculum = True
@@ -38,7 +40,8 @@ class A1JumpCfg( A1FieldCfg ):
         ))
 
         TerrainPerlin_kwargs = merge_dict(A1FieldCfg.terrain.TerrainPerlin_kwargs, dict(
-            zScale= [0.05, 0.15],
+            #zScale= [0.05, 0.15],
+            zScale= 0.05
         ))
     
     class commands( A1FieldCfg.commands ):
@@ -106,7 +109,7 @@ class A1JumpCfgPPO( A1FieldCfgPPO ):
         experiment_name = "field_a1"
         resume = True
         load_run = "{Your traind walking model directory}"
-        load_run = "{Your virtually trained jump model directory}"
+        load_run = "Mar18_20-25-36_WalkForward_aScale0.5"
         
         run_name = "".join(["Skills_",
         ("jump" if A1JumpCfg.terrain.BarrierTrack_kwargs["jump"]["jump_down_prob"] < 1. else "down"),

@@ -55,9 +55,10 @@ task_registry.register( "anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCf
 task_registry.register( "anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO() )
 task_registry.register( "a1", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO() )
 task_registry.register( "a1_teacher", LeggedRobot, A1PlaneCfg(), A1RoughCfgTPPO() )
+task_registry.register( "cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO() )
+
 task_registry.register( "a1_field", LeggedRobotNoisy, A1FieldCfg(), A1FieldCfgPPO() )
 task_registry.register( "a1_distill", LeggedRobotNoisy, A1FieldDistillCfg(), A1FieldDistillCfgPPO() )
-task_registry.register( "cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO() )
 task_registry.register( "go1_field", LeggedRobotNoisy, Go1FieldCfg(), Go1FieldCfgPPO())
 task_registry.register( "go1_distill", LeggedRobotNoisy, Go1FieldDistillCfg(), Go1FieldDistillCfgPPO())
 

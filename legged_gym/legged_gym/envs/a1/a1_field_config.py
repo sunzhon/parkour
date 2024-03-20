@@ -7,13 +7,14 @@ class A1FieldCfg( A1RoughCfg ):
         num_envs = 4096 # 8192
         obs_components = [
             "proprioception", # 48
-            # "height_measurements", # 187
+            #"forward_depth",
             "base_pose",
             "robot_config",
             "engaging_block",
             "sidewall_distance",
         ]
-        # privileged_use_lin_vel = True # for the possible of setting "proprioception" in obs and privileged obs different
+        use_lin_vel = False
+        privileged_use_lin_vel = True # for the possible of setting "proprioception" in obs and privileged obs different
 
         ######## configs for training a walk policy ############
         # obs_components = [
@@ -38,6 +39,15 @@ class A1FieldCfg( A1RoughCfg ):
             resolution = [16, 16]
             position = [0.26, 0., 0.03] # position in base_link
             rotation = [0., 0., 0.] # ZYX Euler angle in base_link
+            # adding randomized latency
+            latency_range = [0.2, 0.26] # for [16, 32, 32] -> 128 -> 128 visual model in (240, 424 option)
+            latency_resample_time = 5.0 # [s]
+            refresh_duration = 1/10 # [s] for (240, 424 option with onboard script fixed to no more than 20Hz)
+
+            # config to simulate stero RGBD camera
+            crop_top_bottom = [0, 0]
+            crop_left_right = [int(60/4), int(46/4)]
+            depth_range = [0.0, 1.5] # [m]
     
         class proprioception:
             delay_action_obs = False
@@ -46,8 +56,8 @@ class A1FieldCfg( A1RoughCfg ):
     
     class terrain( A1RoughCfg.terrain ):
         mesh_type = "trimesh" # Don't change
-        num_rows = 20
-        num_cols = 50
+        num_rows = 4
+        num_cols = 4 #default is 50
         selected = "BarrierTrack" # "BarrierTrack" or "TerrainPerlin", "TerrainPerlin" can be used for training a walk policy.
         max_init_terrain_level = 0
         border_size = 5
@@ -60,10 +70,10 @@ class A1FieldCfg( A1RoughCfg ):
 
         BarrierTrack_kwargs = dict(
             options= [
-                # "jump",
-                # "crawl",
-                # "tilt",
-                # "leap",
+                #"tilt",
+                #"crawl",
+                #"jump",
+                #"leap",
             ], # each race track will permute all the options
             track_width= 1.6,
             track_block_length= 2., # the x-axis distance from the env origin point
@@ -95,7 +105,7 @@ class A1FieldCfg( A1RoughCfg ):
             add_perlin_noise= True,
             border_perlin_noise= True,
             border_height= 0.,
-            virtual_terrain= False,
+            virtual_terrain= True, # true for soft constraints, false for hard terrains
             draw_virtual_terrain= True,
             engaging_next_threshold= 1.2,
             engaging_finish_threshold= 0.,
@@ -104,8 +114,8 @@ class A1FieldCfg( A1RoughCfg ):
         )
 
         TerrainPerlin_kwargs = dict(
-            zScale= [0.08, 0.15],
-            # zScale= 0.15, # Use a constant zScale for training a walk policy
+            zScale= [0.08, 0.15], #
+            #zScale= 0.15, # Use a constant zScale for training a walk policy
             frequency= 10,
         )
     
@@ -114,8 +124,8 @@ class A1FieldCfg( A1RoughCfg ):
         resampling_time = 10 # [s]
         class ranges( A1RoughCfg.commands.ranges ):
             lin_vel_x = [-1.0, 1.0]
-            lin_vel_y = [0.0, 0.0]
-            ang_vel_yaw = [0., 0.]
+            lin_vel_y = [-1.0, 1.0]
+            ang_vel_yaw = [-1., 1.]
 
     class control( A1RoughCfg.control ):
         stiffness = {'joint': 50.}
@@ -169,12 +179,12 @@ class A1FieldCfg( A1RoughCfg ):
     class domain_rand( A1RoughCfg.domain_rand ):
         randomize_com = True
         class com_range:
-            x = [-0.05, 0.15]
+            x = [-0.1, 0.1]
             y = [-0.1, 0.1]
             z = [-0.05, 0.05]
 
         randomize_motor = True
-        leg_motor_strength_range = [0.9, 1.1]
+        leg_motor_strength_range = [0.9, 1.1] # similar to action_scale
 
         randomize_base_mass = True
         added_mass_range = [1.0, 3.0]
@@ -187,19 +197,29 @@ class A1FieldCfg( A1RoughCfg ):
             y= [-0.25, 0.25],
         )
 
-        push_robots = False 
+        push_robots = True 
+        max_push_vel_ang = 0.5
+
 
     class rewards( A1RoughCfg.rewards ):
         class scales:
+            ###### hacker from Field
             tracking_ang_vel = 0.05
-            world_vel_l2norm = -1.
-            legs_energy_substeps = -2e-5
+            lin_vel_l2norm = -1.
+            legs_energy_substeps = -1e-5
             legs_energy = -0.
             alive = 2.
             # penalty for hardware safety
-            exceed_dof_pos_limits = -1e-1
-            exceed_torque_limits_i = -2e-1
-        soft_dof_pos_limit = 0.01
+            exceed_dof_pos_limits = -4e-2
+            exceed_torque_limits_l1norm = -4e-1
+            # penalty for walking gait, probably no need
+            collision = -0.1
+            orientation = -0.1
+            feet_contact_forces = -1e-3
+        soft_dof_pos_limit = 0.5
+        max_contact_force = 60.0
+
+
 
     class normalization( A1RoughCfg.normalization ):
         class obs_scales( A1RoughCfg.normalization.obs_scales ):
@@ -271,7 +291,7 @@ logs_root = osp.join(osp.dirname(osp.dirname(osp.dirname(osp.dirname(osp.abspath
 class A1FieldCfgPPO( A1RoughCfgPPO ):
     class algorithm( A1RoughCfgPPO.algorithm ):
         entropy_coef = 0.01
-        clip_min_std = 1e-12
+        clip_min_std = 0.05
 
     class policy( A1RoughCfgPPO.policy ):
         rnn_type = 'gru'

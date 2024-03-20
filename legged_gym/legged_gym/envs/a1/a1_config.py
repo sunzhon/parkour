@@ -98,8 +98,10 @@ class A1RoughCfgPPO( LeggedRobotCfgPPO ):
 
 class A1PlaneCfg( A1RoughCfg ):
     class env( A1RoughCfg.env ):
-        use_lin_vel = False
-        num_observations = 48
+        #use_lin_vel = False
+        #num_observations = 48
+        use_lin_vel = True
+        num_observations = 235 # no measure_heights makes num_obs = 48; with measure_heights makes num_obs 235
 
     class control( A1RoughCfg.control ):
         stiffness = {'joint': 25.}
@@ -115,8 +117,7 @@ class A1RoughCfgTPPO( A1RoughCfgPPO ):
 
     class algorithm( A1RoughCfgPPO.algorithm ):
         distillation_loss_coef = 50.
-
-        teacher_ac_path = "logs/rough_a1/Nov08_07-55-33_full/model_1500.pt"
+        teacher_ac_path = "logs/rough_a1/Feb29_14-50-57_full/model_1500.pt"
         teacher_policy_class_name = A1RoughCfgPPO.runner.policy_class_name
         class teacher_policy( A1RoughCfgPPO.policy ):
             num_actor_obs = 235
