@@ -18,8 +18,8 @@ from rsl_rl.runners.dagger_saver import DemonstrationSaver, DaggerSaver
 
 logs_root = osp.join(osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__)))), "logs")
 def main(args):
-    RunnerCls = DaggerSaver
-    # RunnerCls = DemonstrationSaver
+    #RunnerCls = DaggerSaver
+    RunnerCls = DemonstrationSaver
     success_traj_only = False
     teacher_act_prob = 0.1
     env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
@@ -34,7 +34,7 @@ def main(args):
     action_sample_std = 0.0
     ############# some predefined options #############
     if len(env_cfg.terrain.BarrierTrack_kwargs["options"]) == 1:
-        env_cfg.terrain.num_rows = 20; env_cfg.terrain.num_cols = 30
+        env_cfg.terrain.num_rows = 4; env_cfg.terrain.num_cols = 4
     else: # for parkour env
         # >>> option 1
         env_cfg.terrain.BarrierTrack_kwargs["track_block_length"] = 2.8
@@ -69,6 +69,7 @@ def main(args):
         env_cfg.terrain.BarrierTrack_kwargs["border_height"] = -0.4
     # Done custom settings
 
+    args.sim_device="cuda:1"
     env, _ = task_registry.make_env(name=args.task, args=args, env_cfg=env_cfg)
     _, train_cfg = update_cfg_from_args(None, train_cfg, args)
 

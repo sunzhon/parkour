@@ -59,9 +59,9 @@ class A1FieldDistillCfg( A1FieldCfg ):
             latency_resample_time = 2.0 # [s]
 
     class terrain( A1FieldCfg.terrain ):
-        num_rows = 2
+        num_rows = 4
         # num_rows = 80
-        num_cols = 2
+        num_cols = 4
         max_init_terrain_level = 1
         curriculum = False
         
@@ -252,7 +252,7 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
             sub_policy_class_name = "ActorCriticRecurrent"
             sub_policy_paths = [ # must in the order of obstacle ID, Replace the folder name with your own training logdir
                 #os.path.join(logs_root, "field_a1/good_WalkForward_aScale0.5"),
-                os.path.join(logs_root,"field_a1/Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
+                os.path.join(logs_root,"field_a1","Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
                 #os.path.join(logs_root,"field_a1/Mar18_20-25-36_WalkForward_aScale0.5"),
                 #os.path.join(logs_root, "field_a1/{your tilting policy}"),
                 #os.path.join(logs_root, "field_a1/{your crawling policy}"),
@@ -291,6 +291,12 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
         # configs for training using collected dataset
         pretrain_iterations = -1 # negative value for infinite training
         class pretrain_dataset:
+            """
+            data_dir = [ "/logs/distill_a1_dagger/Mar20_15-46-23_jump_vDelay0.20-0.26_pDelay0.04-0.05_randOrder_noPerlinRate0.8/" + dir_ \
+                 for dir_ in os.listdir("/logs/distill_a1_dagger/Mar20_15-46-23_jump_vDelay0.20-0.26_pDelay0.04-0.05_randOrder_noPerlinRate0.8")
+            ]
+            """
+            
             scan_dir = "".join([
                 "logs/distill_a1_dagger/", datetime.now().strftime('%b%d_%H-%M-%S'), "_",
                 "".join(A1FieldDistillCfg.terrain.BarrierTrack_kwargs["options"]),
@@ -308,6 +314,7 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
                     (A1FieldDistillCfg.terrain.TerrainPerlin_kwargs["zScale"][1] - A1FieldDistillCfg.terrain.TerrainPerlin_kwargs["zScale"][0])
                 )),
             ])
+            
             dataset_loops = -1 # negative value for infinite dataset loops
             
             random_shuffle_traj_order = True
