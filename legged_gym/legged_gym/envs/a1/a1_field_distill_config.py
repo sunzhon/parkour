@@ -251,7 +251,10 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
 
             sub_policy_class_name = "ActorCriticRecurrent"
             sub_policy_paths = [ # must in the order of obstacle ID, Replace the folder name with your own training logdir
-                #os.path.join(logs_root, "field_a1/good_WalkForward_aScale0.5"),
+                os.path.join(logs_root,"field_a1","Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
+                os.path.join(logs_root,"field_a1","Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
+                os.path.join(logs_root,"field_a1","Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
+                os.path.join(logs_root,"field_a1","Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
                 os.path.join(logs_root,"field_a1","Mar19_16-02-14_Skills_jump_fromMar18_20-25-36"),
                 #os.path.join(logs_root,"field_a1/Mar18_20-25-36_WalkForward_aScale0.5"),
                 #os.path.join(logs_root, "field_a1/{your tilting policy}"),
@@ -284,19 +287,16 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
     class runner( A1FieldCfgPPO.runner ):
         #policy_class_name = "VisualDeterministicRecurrent"
         policy_class_name = "ActorCriticRecurrent"
-        algorithm_class_name = "TPPO"
+        algorithm_class_name = "TPPO" # teacher ppo, it hs distillation loss
         experiment_name = "distill_a1"
         num_steps_per_env = 48
 
         # configs for training using collected dataset
         pretrain_iterations = -1 # negative value for infinite training
         class pretrain_dataset:
-            """
-            data_dir = [ "/logs/distill_a1_dagger/Mar20_15-46-23_jump_vDelay0.20-0.26_pDelay0.04-0.05_randOrder_noPerlinRate0.8/" + dir_ \
-                 for dir_ in os.listdir("/logs/distill_a1_dagger/Mar20_15-46-23_jump_vDelay0.20-0.26_pDelay0.04-0.05_randOrder_noPerlinRate0.8")
-            ]
-            """
-            
+            #data_dir = osp.join(logs_root,"distill_a1_dagger","Mar20_17-26-57_jump_cmdOverride1.2_lowBorder_comMean0.10_randOrder_noPerlinRate0.8_fric0.0-0.8")
+            #data_dir = [ osp.join(logs_root,"distill_a1_dagger","Mar20_17-26-57_jump_cmdOverride1.2_lowBorder_comMean0.10_randOrder_noPerlinRate0.8_fric0.0-0.8", dir_) for dir_ in os.listdir(os.path.join(logs_root, "distill_a1_dagger/Mar20_17-26-57_jump_cmdOverride1.2_lowBorder_comMean0.10_randOrder_noPerlinRate0.8_fric0.0-0.8")) ]
+
             scan_dir = "".join([
                 "logs/distill_a1_dagger/", datetime.now().strftime('%b%d_%H-%M-%S'), "_",
                 "".join(A1FieldDistillCfg.terrain.BarrierTrack_kwargs["options"]),
@@ -315,6 +315,7 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
                 )),
             ])
             
+            
             dataset_loops = -1 # negative value for infinite dataset loops
             
             random_shuffle_traj_order = True
@@ -323,7 +324,7 @@ class A1FieldDistillCfgPPO( A1FieldCfgPPO ):
             starting_frame_range = [0, 100]
 
         resume = False
-        load_run = None
+        load_run = "Mar21_11-45-39_distill_jump_vDelay0.20-0.26_pDelay0.04-0.05_randOrder"
 
         max_iterations = 80000
         save_interval = 2000

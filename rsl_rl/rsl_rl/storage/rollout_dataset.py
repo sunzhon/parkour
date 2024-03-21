@@ -47,6 +47,7 @@ class RolloutDataset(IterableDataset):
 
         # check arguments
         assert not (self.data_dir is None and self.scan_dir is None), "data_dir and scan_dir cannot be both None"
+        assert not (self.data_dir is not None and self.scan_dir is not None), "data_dir and scan_dir cannot be both not None"
 
         self.num_looped = 0
 

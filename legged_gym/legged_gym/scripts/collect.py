@@ -18,11 +18,11 @@ from rsl_rl.runners.dagger_saver import DemonstrationSaver, DaggerSaver
 
 logs_root = osp.join(osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__)))), "logs")
 def main(args):
-    #RunnerCls = DaggerSaver
     RunnerCls = DemonstrationSaver
+    RunnerCls = DaggerSaver
     success_traj_only = False
     teacher_act_prob = 0.1
-    env_cfg, train_cfg = task_registry.get_cfgs(name=args.task)
+    env_cfg, train_cfg = task_registry.get_cfgs(name=args.task) # load train_cfg and env_cfg according to --task
     if RunnerCls == DaggerSaver:
         with open(os.path.join(logs_root, train_cfg.runner.experiment_name, args.load_run, "config.json"), "r") as f:
             d = json.load(f, object_pairs_hook= OrderedDict)
@@ -69,7 +69,6 @@ def main(args):
         env_cfg.terrain.BarrierTrack_kwargs["border_height"] = -0.4
     # Done custom settings
 
-    args.sim_device="cuda:1"
     env, _ = task_registry.make_env(name=args.task, args=args, env_cfg=env_cfg)
     _, train_cfg = update_cfg_from_args(None, train_cfg, args)
 

@@ -18,7 +18,7 @@ def GET_TEACHER_ACT_PROB_FUNC(option, iteration_scale):
     }
     return TEACHER_ACT_PROB_options[option]
 
-class TPPO(PPO):
+class TPPO(PPO): # teacher ppo, it has distillation loss
     def __init__(self,
             *args,
             teacher_ac_path= None, # running device will be handled

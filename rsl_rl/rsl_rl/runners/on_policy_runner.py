@@ -101,7 +101,7 @@ class OnPolicyRunner:
 
         start_iter = self.current_learning_iteration
         tot_iter = self.current_learning_iteration + num_learning_iterations
-        while self.current_learning_iteration < tot_iter:
+        while self.current_learning_iteration < tot_iter: # iterations, how many loop of play the game
             start = time.time()
             # Rollout
             with torch.inference_mode():
